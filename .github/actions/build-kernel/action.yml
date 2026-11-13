@@ -1568,6 +1568,18 @@ runs:
         CONFIG_TMPFS_POSIX_ACL=y
         EOF
 
+    - name: Add NoMount
+      shell: bash
+      if: ${{ env.OP_NOMOUNT == 'true' }}
+      run: |
+        set -euo pipefail
+        cd "$COMMON_KERNEL_FOLDER"
+        # ref must match the NoMount metamodule zip installed on the phone
+        NOMOUNT_REF="${OP_NOMOUNT_REF:-v2.2.0}"
+        curl -fsSL --retry 5 "https://raw.githubusercontent.com/maxsteeel/nomount/$NOMOUNT_REF/kernel/setup.sh" | sh -s "$NOMOUNT_REF"
+        test -L fs/nomount
+        echo "CONFIG_NOMOUNT=y" >> arch/arm64/configs/gki_defconfig
+
     - name: Add BBR
       if: ${{ env.OP_BBR == 'true' }}
       shell: bash
