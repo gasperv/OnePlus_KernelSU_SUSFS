@@ -1190,6 +1190,13 @@ runs:
           cat /tmp/susfs-dryrun.log >&2
 
           FIX_PATCH="$KERNEL_PATCHES_FOLDER/next/susfs_fix_patches/$susfs_version/fix_50_add_susfs_in_${SUSFS_KERNEL_BRANCH}.patch"
+          # Sublevel-specific override shipped in this repo (e.g. 6.12.81: main patch already
+          # covers show_smap, so only the show_smaps_rollup hunks of the companion are needed).
+          LOCAL_FIX="$GITHUB_WORKSPACE/patches/susfs/fix_50_add_susfs_in_${SUSFS_KERNEL_BRANCH}_sublevel${SUBLEVEL}.patch"
+          if [ -f "$LOCAL_FIX" ]; then
+            echo "Using sublevel-specific companion fix: $LOCAL_FIX"
+            FIX_PATCH="$LOCAL_FIX"
+          fi
 
           if [ ! -f "$FIX_PATCH" ]; then
             echo "ERROR: Main SUSFS patch failed and no companion fix patch found at: $FIX_PATCH" >&2
